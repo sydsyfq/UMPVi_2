@@ -5,6 +5,15 @@ include_once('../DBCon.php');
 // include_once('query/applyStickerQuery.php');
 $userIDSession = $_SESSION["user_id"];
 
+$result=mysqli_query($conn,"SELECT count(*) as total from sticker WHERE vehicleType = 'Car'");
+$data=mysqli_fetch_assoc($result);
+$car = $data['total'];
+
+$result1=mysqli_query($conn,"SELECT count(*) as total from sticker WHERE vehicleType = 'Motorcycle'");
+$data1=mysqli_fetch_assoc($result1);
+$motorcycle = $data1['total'];
+
+
 ?>
 
 <!DOCTYPE html>
@@ -346,6 +355,11 @@ $userIDSession = $_SESSION["user_id"];
             </center><br>
           <?php }} ?> 
 
+          <center>
+            <h2>Bar Chart of Vehicle Categories Sticker Application</h2>
+            <p id="piechart"></p>
+          </center>
+
           
 
           
@@ -405,3 +419,28 @@ $userIDSession = $_SESSION["user_id"];
 </body>
 
 </html>
+
+
+          <script type="text/javascript">
+          // Load google charts
+          google.charts.load('current', {'packages':['corechart']});
+          google.charts.setOnLoadCallback(drawChart);
+
+          // Draw the chart and set the chart values
+          function drawChart() {
+            var car = <?php echo $car; ?>;
+              var motorcycle = <?php echo $motorcycle; ?>;
+              var data = google.visualization.arrayToDataTable([
+              ['Vehicle Category', 'Total'],
+              ['Car', car],
+              ['Motorcycle', motorcycle]
+          ]);
+
+            // Optional; add a title and set the width and height of the chart
+            var options = {'title':'Sticker Application Based on Vehicle Category', 'width':550, 'height':400};
+
+            // Display the chart inside the <div> element with id="piechart"
+            var chart = new google.visualization.BarChart(document.getElementById('piechart'));
+            chart.draw(data, options);
+          }
+          </script>
