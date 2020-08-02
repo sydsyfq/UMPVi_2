@@ -3,6 +3,7 @@ session_start();
 ob_start();
 include_once('DBCon.php');
 include_once('query/applyStickerQuery.php');
+
 $userIDSession = $_SESSION["user_id"];
 
 $query = "SELECT * FROM event order BY eventDate";
@@ -198,6 +199,9 @@ $result = mysqli_query($conn,$query);
             <tr>
               <th scope="col">No</th>
               <th scope="col">Event Name</th>
+              <th scope="col">Event Date</th>
+              <th scope="col">Event Time Start</th>
+              <th scope="col">Event Time End</th>
             </tr>
           </thead>
           <tbody>
@@ -207,7 +211,11 @@ $result = mysqli_query($conn,$query);
                 ?>
                 <tr>
                   <td scope="row"><?php echo $i; ?></td>
-                  <td scope="row"><?php echo $row['eventName']; ?></td>                
+                  <td scope="row"><?php echo $row['eventName']; ?></td>
+                  <td scope="row"><?php echo date('d/m/Y', strtotime($row['eventDate'])) ?></td>
+
+                  <td scope="row"><?php echo $row['eventTimeStart']; ?></td>
+                  <td scope="row"><?php echo $row['eventTimeEnd']; ?></td>                  
                 </tr>
               <?php $i++;}}else{?>
                 <tr>
