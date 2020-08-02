@@ -3,10 +3,18 @@ session_start();
 ob_start();
 include_once('DBCon.php');
 include_once('query/applyStickerQuery.php');
+
 $userIDSession = $_SESSION["user_id"];
 
 $query = "SELECT * FROM event order BY eventDate";
 $result = mysqli_query($conn,$query);
+
+if(isset($_POST['search'])){
+  $date1 = ($_POST['dateFrom']);
+  $date2 = ($_POST['dateTo']);
+  $query = "SELECT * FROM event WHERE eventDate BETWEEN '$date1' AND '$date2' ORDER BY eventDate";
+  $result = mysqli_query($conn,$query);
+}
 
 ?>
 
@@ -196,8 +204,25 @@ $result = mysqli_query($conn,$query);
         <table class="table table-striped table-bordered" style="text-align: center;">
           <thead>
             <tr>
+              <td colspan="9">
+                <form method="POST">
+                 <div class="wrap">
+                 <div class="search">
+                    SEARCH EVENT BY DATE RANGE <input type="date" name="dateFrom" class="searchTerm" required="required"> TO <input type="date" name="dateTo" class="searchTerm" required="required">
+                    <button type="submit" name="search" class="searchButton">
+                      <i class="fa fa-search"></i>
+                   </button>
+                 </div>
+              </div>
+                </form>
+              </td>
+            </tr>
+            <tr>
               <th scope="col">No</th>
               <th scope="col">Event Name</th>
+              <th scope="col">Event Date</th>
+              <th scope="col">Event Time Start</th>
+              <th scope="col">Event Time End</th>
             </tr>
           </thead>
           <tbody>
@@ -207,7 +232,11 @@ $result = mysqli_query($conn,$query);
                 ?>
                 <tr>
                   <td scope="row"><?php echo $i; ?></td>
-                  <td scope="row"><?php echo $row['eventName']; ?></td>                
+                  <td scope="row"><?php echo $row['eventName']; ?></td>
+                  <td scope="row"><?php echo date('d/m/Y', strtotime($row['eventDate'])) ?></td>
+
+                  <td scope="row"><?php echo $row['eventTimeStart']; ?></td>
+                  <td scope="row"><?php echo $row['eventTimeEnd']; ?></td>                  
                 </tr>
               <?php $i++;}}else{?>
                 <tr>
