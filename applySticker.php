@@ -3,6 +3,8 @@ session_start();
 ob_start();
 include_once('DBCon.php');
 include_once('query/applyStickerQuery.php');
+include_once('query/deleteSticker.php');
+include_once('query/updateSticker.php');
 
 $userIDSession = $_SESSION["user_id"];
 
@@ -251,6 +253,8 @@ $result = mysqli_query($conn,$query);
               <th scope="col">Vehicle Type</th>
               <th scope="col">Status</th>
               <th scope="col">Vehicle Grant</th>
+              <th scope="col">Delete</th>
+              <th scope="col">Edit</th>
             </tr>
           </thead>
           <tbody>
@@ -262,6 +266,7 @@ $result = mysqli_query($conn,$query);
                 ?>
                 <tr stickerID='tr_<?= $stickerID ?>'>
                   <td scope="row"><?php echo $i; ?></td>
+                  <td scope="row" hidden="hidden"><?php echo $row['stickerID']; ?></td>
                   <td scope="row"><?php echo $row['vehicleBrandModel']; ?></td>
                   <td scope="row"><?php echo $row['vehicleRegNum']; ?></td>
                   <td scope="row"><?php echo $row['vehicleColor']; ?></td>
@@ -272,18 +277,85 @@ $result = mysqli_query($conn,$query);
                   <td scope="row"><span class="badge badge-success"><?php echo $row['status']; ?></span></td>
                   <?php } ?>
                   <td scope="row"><img width="200px" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($vehicleGrant); ?>"/></td>
+                  <?php if ($row['status'] === 'NOT VERIFIED') { ?>
+                  <td scope="row"><input type='checkbox' name='deleteData[]' value='<?= $stickerID ?>'></td>
+                  <td><button type="button" class="btn btn-success editbtn"> EDIT </button></td>
+                  <?php } else { ?>
+                  <td scope="row"><input type='checkbox' name='deleteData[]' value='<?= $stickerID ?>' disabled="disabled"></td>
+                  <td><button type="button" class="btn btn-success editbtn" disabled="disabled"> EDIT </button></td>
+                  <?php } ?>
+                  
                 </tr>
               <?php $i++;}}else{?>
                 <tr>
-                  <td scope="row" colspan="7">No sticker application yet</td>
+                  <td scope="row" colspan="9">No sticker application yet</td>
                 </tr>
               <?php } ?>
               <tr>
+                <th scope="row" colspan="9">
+                  <button type="submit" name="delete" class="btn btn-danger">Delete Row(s)</button>
+                </th>
               </tr>
             </tbody>
           </table>
         </form>
       </center>
+
+      <!-- ####################################### EDIT POP UP ##################################################### -->
+
+      <div class="modal fade" id="editmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"> Edit Sticker Application </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+        <form action="" method="POST">
+
+            <div class="modal-body">
+
+                <input hidden type="text" name="update_id" id="update_id">
+
+                <div class="form-group">
+                    <label> Vehicle Brand and Model</label>
+                    <input type="text" name="vehicleBrandModel" id="vehicleBrandModel" class="form-control" placeholder="Enter Vehicle Brand and Model" required="required">
+                </div>
+
+                <div class="form-group">
+                    <label> Vehicle Registration Number </label>
+                    <input type="text" name="vehicleRegNum" id="vehicleRegNum" class="form-control" placeholder="Enter Vehicle Registration Number" required="required">
+                </div>
+
+                <div class="form-group">
+                    <label> Vehicle Colour </label>
+                    <input type="text" name="vehicleColor" id="vehicleColor" class="form-control" placeholder="Enter Vehicle Colour" required="required">
+                </div>
+
+                <div class="form-group">
+                    <label> Vehicle Type </label>
+                    <select name="vehicleType" id="vehicleType" required="required" class="form-control">
+                      <option value="" selected="selected" disabled="disabled">Select Type</option>
+                      <option value="Motorcycle">Motorcycle</option>
+                      <option value="Car">Car</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" name="updatedata" class="btn btn-primary">Update Data</button>
+            </div>
+        </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- ############################################################################################################# -->
+
 
     </div>
     <!-- End of Content Wrapper -->
@@ -335,3 +407,28 @@ $result = mysqli_query($conn,$query);
 </body>
 
 </html>
+
+<script>
+
+$(document).ready(function () {
+    $('.editbtn').on('click', function() {
+        
+        $('#editmodal').modal('show');
+
+        
+            $tr = $(this).closest('tr');
+
+            var data = $tr.children("td").map(function() {
+                return $(this).text();
+            }).get();
+
+            console.log(data);
+
+            $('#update_id').val(data[1]);
+            $('#vehicleBrandModel').val(data[2]);
+            $('#vehicleRegNum').val(data[3]);
+            $('#vehicleColor').val(data[4]);
+    });
+});
+
+</script>
