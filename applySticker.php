@@ -6,6 +6,9 @@ include_once('query/applyStickerQuery.php');
 
 $userIDSession = $_SESSION["user_id"];
 
+$query = "SELECT * FROM sticker WHERE userID = $userIDSession";
+$result = mysqli_query($conn,$query);
+
 ?>
 
 <!DOCTYPE html>
@@ -232,6 +235,55 @@ $userIDSession = $_SESSION["user_id"];
         </tbody>
       </table>
     </form>
+
+    <center>
+      <form action="" method="POST">
+        <table class="table table-striped table-bordered" style="text-align: center;">
+          <thead>
+            <tr>
+              <td colspan="9">Sticker Application</td>
+            </tr>
+            <tr>
+              <th scope="col">Number</th>
+              <th scope="col">Vehicle Name</th>
+              <th scope="col">Registration Number</th>
+              <th scope="col">Vehicle Color</th>
+              <th scope="col">Vehicle Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Vehicle Grant</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if (mysqli_num_rows($result) > 0){
+              $i = 1;
+              while($row = mysqli_fetch_assoc($result)){
+                $vehicleGrant = $row["vehicleGrant"]; 
+                $stickerID = $row["stickerID"];
+                ?>
+                <tr stickerID='tr_<?= $stickerID ?>'>
+                  <td scope="row"><?php echo $i; ?></td>
+                  <td scope="row"><?php echo $row['vehicleBrandModel']; ?></td>
+                  <td scope="row"><?php echo $row['vehicleRegNum']; ?></td>
+                  <td scope="row"><?php echo $row['vehicleColor']; ?></td>
+                  <td scope="row"><?php echo $row['vehicleType']; ?></td>
+                  <?php if ($row['status'] === 'NOT VERIFIED') { ?>
+                  <td scope="row"><span class="badge badge-primary"><?php echo $row['status']; ?></span></td>
+                  <?php } else { ?>
+                  <td scope="row"><span class="badge badge-success"><?php echo $row['status']; ?></span></td>
+                  <?php } ?>
+                  <td scope="row"><img width="200px" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($vehicleGrant); ?>"/></td>
+                </tr>
+              <?php $i++;}}else{?>
+                <tr>
+                  <td scope="row" colspan="7">No sticker application yet</td>
+                </tr>
+              <?php } ?>
+              <tr>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </center>
 
     </div>
     <!-- End of Content Wrapper -->
