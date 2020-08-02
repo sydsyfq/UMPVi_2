@@ -217,6 +217,7 @@ $result = mysqli_query($conn,$query);
               <th scope="col">Status</th>
               <th scope="col">Vehicle Grant</th>
               <th scope="col">User Type</th>
+              <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -240,9 +241,14 @@ $result = mysqli_query($conn,$query);
                   <td scope="row"><span class="badge badge-success"><?php echo $row['status']; ?></span></td>
                   <?php } ?>
                   <td scope="row"><img width="200px" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($vehicleGrant); ?>" /></td>
+                  <td scope="row"><?php echo $row['userType']; ?></td>
+                  <?php if ($row['status'] === 'NOT VERIFIED') { ?>
+                  <td scope="row"><button type="submit" name="verify" class="btn btn-primary" value='<?= $stickerID ?>'>VERIFY</button></td>
+                  <?php } else { ?>
+                  <td scope="row"><button type="submit" name="verify" class="btn btn-primary" value='<?= $stickerID ?>' disabled="disabled">VERIFY</button></td>
                   <?php } ?>
                 </tr>
-              <?php $i++;} else {?>
+              <?php $i++;}} else {?>
                 <tr>
                   <td scope="row" colspan="10">No sticker application yet</td>
                 </tr>
