@@ -4,10 +4,28 @@ ob_start();
 include_once('DBCon.php');
 $userIDSession = $_SESSION["user_id"];
 $_SESSION["username"];
+//include_once('query/stickerVerification.php');
+
+$query = "SELECT * FROM pointAward INNER JOIN event ON pointAward.eventID = event.eventID INNER JOIN user ON pointAward.userID = user.userID WHERE user.userID = $userIDSession";
+$result2 = mysqli_query($conn,$query);
+
+$query = "SELECT * FROM trafficViolation INNER JOIN penalty ON trafficViolation.penaltyID = penalty.penaltyID INNER JOIN user ON trafficViolation.userID = user.userID WHERE user.userID = $userIDSession";
+$result1 = mysqli_query($conn,$query);
 
 $query = "SELECT * FROM meritAward INNER JOIN meritObedient ON meritAward.meritObedientID = meritObedient.meritObedientID INNER JOIN user ON meritAward.userMatricNum = user.userMatricNum WHERE user.userID = $userIDSession";
 $result = mysqli_query($conn,$query);
 
+$sum = "SELECT SUM(meritObedientPoint) as 'sumMerit' FROM meritAward INNER JOIN meritObedient ON meritAward.meritObedientID = meritObedient.meritObedientID INNER JOIN user ON meritAward.userMatricNum = user.userMatricNum WHERE user.userID = $userIDSession";
+$res= mysqli_query($conn, $sum);
+$sumResult=mysqli_fetch_array($res);
+
+$sum1 = "SELECT SUM(penaltyMerit) as 'sumPenalty' FROM trafficViolation INNER JOIN penalty ON trafficViolation.penaltyID = penalty.penaltyID INNER JOIN user ON trafficViolation.userID = user.userID WHERE user.userID = $userIDSession";
+$res1= mysqli_query($conn, $sum1);
+$sumResult1=mysqli_fetch_array($res1);
+
+$sum2 = "SELECT SUM(pointAwardTotal) as 'sumClaim' FROM pointAward INNER JOIN event ON pointAward.eventID = event.eventID INNER JOIN user ON pointAward.userID = user.userID WHERE user.userID = $userIDSession";
+$res2= mysqli_query($conn, $sum2);
+$sumResult2=mysqli_fetch_array($res2);
 ?>
 
 <!DOCTYPE html>
@@ -191,6 +209,16 @@ $result = mysqli_query($conn,$query);
            
           </div> 
 
+      <!-- End of Main Content -->
+      <?php $sum =  $sumResult['sumMerit']-$sumResult1['sumPenalty']+$sumResult2['sumClaim']?>
+      <center>
+    <div class="card" style="text-align: center; background-color: #337ab7; color: white;">
+  <div class="card-body">
+    <h2 class="card-title">Merit Total</h2>
+    <h3 class="card-text"><?php echo $sum; ?></h3>
+  </div>
+</div></center><br>
+
       <center>
         <table class="table table-striped table-bordered" style="text-align: center;">
           <thead>
@@ -220,6 +248,93 @@ $result = mysqli_query($conn,$query);
               <?php } ?>
               <tr>
               <td scope="row" colspan="2">Total Merit</td>
+              <td scope="row"><?php if ($sumResult['sumMerit'] == 0) {
+                echo "0";}
+                else{
+                  echo $sumResult['sumMerit'];
+                }?></td>
+              </tr>
+            </tbody>
+          </table>
+        </center>
+
+        <br>
+
+        <center>
+        <table class="table table-striped table-bordered" style="text-align: center;">
+          <thead>
+            <tr>
+              <td colspan="3">Point Claim</td>
+            </tr>
+            <tr>
+              <th scope="col">Number</th>
+              <th scope="col">Event</th>
+              <th scope="col">Claim Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if (mysqli_num_rows($result2) > 0){
+              $i = 1;
+              while($row1 = mysqli_fetch_assoc($result2)){ 
+                ?>
+                <tr>
+                  <td scope="row"><?php echo $i; ?></td>
+                  <td scope="row"><?php echo $row1['eventName']; ?></td>
+                  <td scope="row"><?php echo $row1['pointAwardTotal']; ?></td>
+                </tr>
+              <?php $i++;}}else{?>
+                <tr>
+                  <td scope="row" colspan="3">No point claimed</td>
+                </tr>
+              <?php } ?>
+              <tr>
+                <td scope="row" colspan="2">Total Merit</td>
+                <td scope="row"><?php if ($sumResult2['sumClaim'] == 0) {
+                  echo "0";}
+                  else{
+                    echo $sumResult2['sumClaim'];
+                  }?></td>
+              </tr>
+            </tbody>
+          </table>
+        </center>
+
+        <br>
+
+        <center>
+        <table class="table table-striped table-bordered" style="text-align: center;">
+          <thead>
+            <tr>
+              <td colspan="3">Demerit</td>
+            </tr>
+            <tr>
+              <th scope="col">Number</th>
+              <th scope="col">Penalty Position</th>
+              <th scope="col">Penalty Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if (mysqli_num_rows($result1) > 0){
+              $i = 1;
+              while($row1 = mysqli_fetch_assoc($result1)){ 
+                ?>
+                <tr>
+                  <td scope="row"><?php echo $i; ?></td>
+                  <td scope="row"><?php echo $row1['penaltyPosition']; ?></td>
+                  <td scope="row"><?php echo $row1['penaltyMerit']; ?></td>
+                </tr>
+              <?php $i++;}}else{?>
+                <tr>
+                  <td scope="row" colspan="3">No demerit yet</td>
+                </tr>
+              <?php } ?>
+              <tr>
+                <td scope="row" colspan="2">Total Demerit</td>
+                <td scope="row"><?php if ($sumResult1['sumPenalty'] == 0) {
+                  echo "0";}
+                  else{
+                    echo $sumResult1['sumPenalty'];
+                  }?></td>
               </tr>
             </tbody>
           </table>
