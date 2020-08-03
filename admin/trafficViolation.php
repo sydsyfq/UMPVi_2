@@ -5,6 +5,22 @@ include_once('../query/trafficViolationQuery.php');
 $_SESSION["user_id"];
 $_SESSION["username"];
 
+  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '1'");
+  $data=mysqli_fetch_assoc($result);
+  $accident = $data['total'];
+
+  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '2'");
+  $data=mysqli_fetch_assoc($result);
+  $parking = $data['total'];
+
+  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '3'");
+  $data=mysqli_fetch_assoc($result);
+  $sticker = $data['total'];
+
+  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '4'");
+  $data=mysqli_fetch_assoc($result);
+  $helmet = $data['total'];
+
 
 $query = "SELECT * FROM penalty";
 $result = mysqli_query($conn,$query);
@@ -35,15 +51,7 @@ $result = mysqli_query($conn,$query);
 
 <body id="page-top">
 
-  <!-- Bootstrap core JavaScript-->
-  <script src="../vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Core plugin JavaScript-->
-  <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
-
-  <!-- Custom scripts for all pages-->
-  <script src="../js/sb-admin-2.min.js"></script>
+  
 
   <!-- Page Wrapper -->
   <div id="wrapper">
@@ -207,11 +215,7 @@ $result = mysqli_query($conn,$query);
 
       <!-- End of Main Content -->
 
-      <!-- QRScan Library-->
-  <script type="text/javascript" src="../QrScan/js/filereader.js"></script>
-  <script type="text/javascript" src="../QrScan/js/qrcodelib.js"></script>
-  <script type="text/javascript" src="../QrScan/js/webcodecamjs.js"></script>
-  <script type="text/javascript" src="../QrScan/js/main.js"></script>
+      
 
       <form action="" method="POST" enctype="multipart/form-data">
       <table class="table table-striped table-bordered">
@@ -227,8 +231,6 @@ $result = mysqli_query($conn,$query);
             <td>
               <select style="width: 500px;" name="penaltyID">
                 <?php
-                $query = "SELECT * FROM penalty";
-                $result = mysqli_query($conn,$query);
                  while($row = mysqli_fetch_assoc($result)){
                   ?>
                   <option name="detail" value=<?php echo $row['penaltyID']; ?> ><?php echo $row['penaltyPosition']; ?></option>
@@ -278,8 +280,16 @@ $result = mysqli_query($conn,$query);
     </div>
   </div>
 
-  
+ <!-- Java scripting Parts--> 
+  <!-- Bootstrap core JavaScript-->
+  <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
+  <!-- Core plugin JavaScript-->
+  <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="../js/sb-admin-2.min.js"></script>
   <!-- Page level plugins -->
   <script src="../vendor/chart.js/Chart.min.js"></script>
 
@@ -294,6 +304,12 @@ $result = mysqli_query($conn,$query);
   <script type="text/javascript" src="../QrScan/js/webcodecamjs.js"></script>
   <script type="text/javascript" src="../QrScan/js/main.js"></script>
 
+  <!-- QRScan Library-->
+  <script type="text/javascript" src="../QrScan/js/filereader.js"></script>
+  <script type="text/javascript" src="../QrScan/js/qrcodelib.js"></script>
+  <script type="text/javascript" src="../QrScan/js/webcodecamjs.js"></script>
+  <script type="text/javascript" src="../QrScan/js/main.js"></script>
+
 
 <!-- Pie Chart Script -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -303,25 +319,7 @@ $result = mysqli_query($conn,$query);
   google.charts.load('current', {'packages':['corechart']});
   google.charts.setOnLoadCallback(drawChart);
 
-  <?php 
 
-  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '1'");
-  $data=mysqli_fetch_assoc($result);
-  $accident = $data['total'];
-
-  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '2'");
-  $data=mysqli_fetch_assoc($result);
-  $parking = $data['total'];
-
-  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '3'");
-  $data=mysqli_fetch_assoc($result);
-  $sticker = $data['total'];
-
-  $result=mysqli_query($conn,"SELECT count(*) as total from trafficviolation WHERE penaltyID = '4'");
-  $data=mysqli_fetch_assoc($result);
-  $helmet = $data['total'];
-
-  ?>
 
   // Draw the chart and set the chart values
   function drawChart() {
